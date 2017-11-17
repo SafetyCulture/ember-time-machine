@@ -29,3 +29,10 @@ test('pathInGlobs - wildcards', function(assert) {
   assert.equal(pathInGlobs('z.b.d', ['*.b.d']), true);
   assert.equal(pathInGlobs('z.a.c.b', ['*.a.*.b']), true);
 });
+
+test('pathInGlobs - double wildcards', function(assert) {
+  assert.equal(pathInGlobs('a.b.d.c', ['a.**.c']), true);
+  assert.equal(pathInGlobs('a.b.d.c', ['**.d.c']), true);
+  assert.equal(pathInGlobs('a.1.b.d.2.c', ['a.**.d.@each.c']), true);
+  assert.equal(pathInGlobs('a.1.b.d.2.c', ['a.**.c.@each.c']), false);
+});
