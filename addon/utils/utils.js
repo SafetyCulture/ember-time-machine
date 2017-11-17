@@ -10,6 +10,7 @@ export function pathInGlobs(path = '', globs = []) {
 
 function regexFromGlob(glob) {
   return (`.${glob}`)
-          .replace(new RegExp(/\.\*/, 'g'), '\\.(\\w+)')
-          .replace(new RegExp(/\.@each/, 'g'), '\\.(\\d+)');
+    .replace(new RegExp(/\.\*\*/, 'g'), '\\.[\\w\\d\\.]+')
+    .replace(new RegExp(/\.\*/, 'g'), '\\.(\\w+)')
+    .replace(new RegExp(/\.@each/, 'g'), '\\.(\\d+)');
 }
