@@ -116,38 +116,31 @@ export default Ember.Mixin.create({
    */
   canRedo: computed.notEmpty('_rootMachineState.redoStack').readOnly(),
 
-  /**
-   * A flag indicating that sequential changes will be added to the last change set in the undoStack
-   *
-   * @private
-   * @property
-   * @type {Boolean}
-   */
-  _changeInProgress: false,
-
-  /**
-   * A collection of changes to be treated as one change set
-   *
-   * @private
-   * @property
-   * @type {Array.<Record>}
-   */
-  _changeSet: null,
-
   init() {
     this._super(...arguments);
     this._setupMachine();
   },
 
   startTimeMachine() {
-    this._changeInProgress = true;
-    this._changeSet = [];
+    let state = this.get('_rootMachineState');
+    state.set('changeInProgress', true);
   },
 
   stopTimeMachine() {
-    this._changeInProgress = false;
-    this.get('_rootMachineState.undoStack').push(this._changeSet);
-    this._changeSet = null;
+    let state = this.get('_rootMachineState');
+
+    if (!state.get('changeInProgress')) {
+      return;
+    }
+
+    let undoStack = state.get('undoStack');
+    let changeSet = state.get('changeSet');
+
+    if (!isEmpty(changeSet)) {
+      undoStack.pushObject(changeSet.slice());
+      changeSet.clear();
+    }
+    state.set('changeInProgress', false);
   },
 
   destroy() {
@@ -315,6 +308,10 @@ export default Ember.Mixin.create({
       MachineStates.set(this, Ember.Object.create({
         undoStack: emberArray(),
         redoStack: emberArray(),
+        // A collection of changes to be treated as one change set
+        changeSet: emberArray(),
+        // A flag indicating that sequential changes will be added to the last change set in the undoStack
+        changeInProgress: false,
         ignoredProperties: isNone(ignoredProperties) ? [] : ignoredProperties,
         frozenProperties: isNone(frozenProperties) ? [] : frozenProperties,
         shouldWrapValue: isNone(shouldWrapValue) ? () => true : shouldWrapValue,
@@ -427,12 +424,13 @@ export default Ember.Mixin.create({
     let state = this.get('_rootMachineState');
     let redoStack = state.get('redoStack');
     let undoStack = state.get('undoStack');
+    let changeSet = state.get('changeSet');
 
     if (!pathInGlobs(record.fullPath, state.get('ignoredProperties'))) {
       let frozenRecord = Object.freeze(record);
 
-      if (this._changeInProgress) {
-        this._changeSet.push(frozenRecord);
+      if (state.get('changeInProgress')) {
+        changeSet.pushObject(frozenRecord);
       } else {
         undoStack.pushObject([frozenRecord]);
       }
