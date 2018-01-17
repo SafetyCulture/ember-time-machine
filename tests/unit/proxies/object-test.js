@@ -294,3 +294,36 @@ test('general test', function(assert) {
     B: 1
   });
 });
+
+test('startTimeMachine/stopTimeMachine for nested objects', function(assert) {
+  content.setProperties({
+    person: { name: 't' },
+    info: { location: 's' }
+  });
+
+  tm.startTimeMachine();
+  tm.set('person.name', 'x');
+  tm.set('info.location', 'y');
+  tm.stopTimeMachine();
+
+  tm.undo();
+  assert.deepEqual(content.getProperties(['person', 'info']), {
+    person: {
+      name: 't'
+    },
+    info: {
+      location: 's'
+    }
+  });
+
+  tm.redo();
+  assert.deepEqual(content.getProperties(['person', 'info']), {
+    person: {
+      name: 'x'
+    },
+    info: {
+      location: 'y'
+    }
+  });
+
+});
