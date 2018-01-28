@@ -1,6 +1,6 @@
 {
   "name": "@safetyculture/ember-time-machine",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "description": "An EmberJS state management solution.",
   "directories": {
     "doc": "doc",
