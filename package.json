@@ -1,5 +1,5 @@
 {
-  "name": "ember-time-machine",
+  "name": "@safetyculture/ember-time-machine",
   "version": "0.0.6",
   "description": "An EmberJS state management solution.",
   "directories": {
@@ -13,7 +13,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "http://github.com/offirgolan/ember-time-machine.git"
+    "url": "http://github.com/SafetyCulture/ember-time-machine.git"
   },
   "engines": {
     "node": ">= 0.12.0"
